@@ -1,8 +1,23 @@
 # VPN / Sansür Kontrol
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)](https://github.com/Keplersa1254/SansurKontrol)
+[![Download](https://img.shields.io/badge/download-.exe-brightgreen.svg)](https://github.com/Keplersa1254/SansurKontrol/releases/latest)
+
 IP adresinizi gösteren, konumunuzu haritada gösteren ve IP'nin Türkiye'den
 gelip gelmediğini kontrol ederek VPN'inizin çalışıp çalışmadığını anlatan
 basit bir Windows programı.
+
+## Indir (Python gerekmez)
+
+En son hazır programı buradan indirin:
+
+**[VPN_Kontrol.exe indir](https://github.com/Keplersa1254/SansurKontrol/releases/latest/download/VPN_Kontrol.exe)**
+
+Indirdikten sonra `VPN_Kontrol.exe` dosyasına çift tıklayın. Python kurmanıza
+gerek yoktur.
+
+> Tum surumler: https://github.com/Keplersa1254/SansurKontrol/releases
 
 ## Ne yapar?
 - IP adresinizi, ülke/şehir ve internet sağlayıcınızı gösterir.
@@ -14,7 +29,8 @@ basit bir Windows programı.
 ## Nasıl çalıştırılır?
 
 ### 1. Hazır .exe ile (önerilen, Python gerekmez)
-`VPN_Kontrol.exe` dosyasına çift tıklayın. Başka kurulum gerekmez.
+Yukarıdaki **Indir** bölümünden `VPN_Kontrol.exe` dosyasını indirip çift
+tıklayın. Başka kurulum gerekmez.
 
 ### 2. Kaynak koddan (Python ile)
 1. Python'u kurun (python.org, "Add Python to PATH" işaretli olsun).

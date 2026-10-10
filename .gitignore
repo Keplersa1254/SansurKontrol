@@ -1,0 +1,23 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ---- PyInstaller build çıktıları ----
+build/
+dist/
+
+# ---- Oluşan .exe (GitHub Releases üzerinden dağıtılır, repoya gömülmez) ----
+VPN_Kontrol.exe
+
+# ---- İşletim sistemi çöpleri ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Editör klasörleri ----
+.vscode/
+.idea/

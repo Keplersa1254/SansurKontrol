@@ -17,6 +17,7 @@ import threading
 
 import requests
 import customtkinter as ctk
+from PIL import Image, ImageTk, ImageOps
 
 # Harita kütüphanesi kurulu değilse program yine de çalışsın (harita hariç).
 try:
@@ -40,9 +41,9 @@ CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".vpn_kontrol.json")
 API_URL = "http://ip-api.com/json/"
 TURKEY_CODE = "TR"
 
-# Harita tile sunucuları (hafif ve hızlı: CartoDB)
-TILE_LIGHT = "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-TILE_DARK = "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+# Harita tile sunucusu (API anahtarı gerektirmez - OpenStreetMap standart).
+# Koyu modda bu tile'lar kod ile koyulaştırılır (gece haritası efekti).
+TILE_OSM = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 # Durum renkleri
 RENK_TURKIYE = "#c0392b"   # kırmızı
@@ -65,6 +66,43 @@ def save_config(cfg):
             json.dump(cfg, f, ensure_ascii=False, indent=2)
     except Exception:
         pass
+
+
+# ---------------------------------------------------------------------------
+# Tema duyarlı harita: koyu modda tile'ları kod ile koyulaştırır.
+# ---------------------------------------------------------------------------
+if MAP_AVAILABLE:
+    class ThemeMapView(TkinterMapView):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.dark_mode = False
+
+        def request_image(self, zoom, x, y, db_cursor=None):
+            if not self.dark_mode:
+                return super().request_image(zoom, x, y, db_cursor)
+            # Koyu mod: tile'ı indirip gece haritası efekti uygula.
+            try:
+                url = self.tile_server.replace("{x}", str(x)).replace("{y}", str(y)).replace("{z}", str(zoom))
+                resp = requests.get(url, stream=True, timeout=15,
+                                    headers={"User-Agent": "VPNKontrol/1.0"})
+                image = Image.open(resp.raw).convert("RGB")
+                # Gri ton + ters çevirme: beyaz zemin siyah, çizgiler açık olur.
+                image = ImageOps.invert(ImageOps.grayscale(image)).convert("RGB")
+                # Hafif mavi ton (gece hissi)
+                r, g, b = image.split()
+                b = b.point(lambda i: min(255, int(i * 1.12)))
+                image = Image.merge("RGB", (r, g, b))
+                if self.running:
+                    image_tk = ImageTk.PhotoImage(image)
+                else:
+                    return self.empty_tile_image
+                self.tile_image_cache[f"{zoom}{x}{y}"] = image_tk
+                return image_tk
+            except Exception:
+                # Herhangi bir hatada normal (açık) tile'a dön.
+                return super().request_image(zoom, x, y, db_cursor)
+else:
+    ThemeMapView = None
 
 
 class VPNKontrolApp(ctk.CTk):
@@ -96,7 +134,6 @@ class VPNKontrolApp(ctk.CTk):
         ust = ctk.CTkFrame(self, fg_color="transparent")
         ust.pack(fill="x", padx=14, pady=(12, 4))
         try:
-            from PIL import Image
             light = Image.open(LOGO_LIGHT)
             dark = Image.open(LOGO_DARK)
             self._logo = ctk.CTkImage(light_image=light, dark_image=dark, size=(48, 48))
@@ -136,7 +173,7 @@ class VPNKontrolApp(ctk.CTk):
 
         # Harita
         if MAP_AVAILABLE:
-            self.map_widget = TkinterMapView(self, width=420, height=300, corner_radius=0)
+            self.map_widget = ThemeMapView(self, width=420, height=300, corner_radius=0)
             self.map_widget.pack(fill="both", expand=True, padx=14, pady=6)
             self.map_widget.set_zoom(3)
         else:
@@ -165,17 +202,16 @@ class VPNKontrolApp(ctk.CTk):
         self._apply_map_theme()
 
     def _apply_map_theme(self):
-        """Temaya uygun harita tile'larını yükler."""
+        """Temaya göre harita tile'larını ayarlar (koyu modda kod ile koyulaştırma)."""
         if self.map_widget is None:
             return
         try:
             mode = ctk.get_appearance_mode()
         except Exception:
             mode = "Light"
-        if mode == "Dark":
-            self.map_widget.set_tile_server(TILE_DARK, max_zoom=19)
-        else:
-            self.map_widget.set_tile_server(TILE_LIGHT, max_zoom=19)
+        self.map_widget.dark_mode = (mode == "Dark")
+        # set_tile_server tile önbelleğini sıfırlar; böylece tile'lar yeni modda yüklenir.
+        self.map_widget.set_tile_server(TILE_OSM, max_zoom=19)
 
     # -------------------------------------------------------------- kontrol
     def check_ip(self):

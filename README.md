@@ -25,6 +25,7 @@ gerek yoktur.
 - IP Türkiye'den ise kırmızı, yurt dışından ise yeşil uyarı verir.
   - Kırmızı = VPN kapalı veya çalışmıyor olabilir.
   - Yeşil = VPN çalışıyor,İP adresiniz Türkiyede değil
+- Aydınlık / Karanlık / Sistem teması desteği (seçiminiz hatırlanır).
 
 ## Nasıl çalıştırılır?
 

@@ -11,8 +11,10 @@ a = Analysis(
     datas=[
         ('logo.png', '.'),
         ('logo.ico', '.'),
+        ('logo_light.png', '.'),
+        ('logo_dark.png', '.'),
     ],
-    hiddenimports=['tkintermapview'],
+    hiddenimports=['tkintermapview', 'customtkinter'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

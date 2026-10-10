@@ -1,3 +1,4 @@
 requests>=2.28
 tkintermapview>=1.29
 Pillow>=9.0
+customtkinter>=5.2

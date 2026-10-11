@@ -8,7 +8,7 @@ IP adresinizi gösteren, konumunuzu haritada gösteren ve IP'nin Türkiye'den
 gelip gelmediğini kontrol ederek VPN'inizin çalışıp çalışmadığını anlatan
 basit bir Windows programı.
 
-## Indir (Python gerekmez)
+## Indirme linki
 
 En son hazır programı buradan indirin:
 
